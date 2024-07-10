@@ -70,7 +70,12 @@ export class UserController {
                 createUserDto,
                 false,
             );
-            delete user.password;
+
+            user.password = undefined;
+            user.createdAt = undefined;
+            user.banned = undefined;
+            user.deleted = undefined;
+            user.role = undefined;
 
             return this.responseBuilder.successWithoutMessage(user).build();
         } catch (error) {
