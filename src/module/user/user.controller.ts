@@ -62,7 +62,6 @@ export class UserController {
     @Post('/register')
     async register(@Body() createUserDto: CreateUserDto) {
         try {
-            console.log(createUserDto.password);
             createUserDto.password = await this.encryptionService.hash(
                 createUserDto.password,
             );
