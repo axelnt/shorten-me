@@ -71,7 +71,7 @@ export class UserController {
                 createUserDto,
                 false,
             );
-            delete user.password;
+            delete user.data.password;
 
             return this.responseBuilder.successWithoutMessage(user).build();
         } catch (error) {
