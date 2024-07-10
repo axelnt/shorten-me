@@ -1,73 +1,280 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# shorten-me API
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+shorten-me API is a simple URL shortener API that allows you to shorten URLs. It also comes with a administration routes to manage the shortened URLs along with the statistics of the shortened URLs. The API is built with [NestJS](https://nestjs.com/), uses [MongoDB](https://www.mongodb.com/) as the database and [Mongoose](https://mongoosejs.com/) as an ODM.
+
+The API also does not include characters that are ambiguous such as `l`, `1`, `I`, `O`, `0` and `o` to avoid confusion when reading the shortened URL.
 
 ## Installation
 
-```bash
-$ npm install
-```
+To install the API, you need to have [Node.js](https://nodejs.org/en/) installed on your machine. After installing Node.js, you can clone the repository and run the following commands:
 
-## Running the app
+1. Clone the repository
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/axelnt/shorten-me.git
 ```
 
-## Test
+2. Navigate to the project directory
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cd shorten-me
 ```
 
-## Support
+3. Install the dependencies
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+npm install
+```
 
-## Stay in touch
+4. Create a `.env` file: You can copy the `.env.example` file and rename it to `.env` with the following command:
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+cp .env.example .env
+```
 
-## License
+5. Start the API
 
-Nest is [MIT licensed](LICENSE).
+5.1. Start the API in development mode
+
+```bash
+npm run start:dev
+```
+
+5.2. Start the API in production mode
+
+5.2.1. First, build the project
+
+```bash
+npm run build
+```
+
+5.2.2. Start the API
+
+```bash
+npm run start:prod
+```
+
+Now you can access the API on `http://localhost:3000`.
+
+## API Routes
+
+## Creating a shortened URL
+
+### Request
+
+`POST /shorten`
+
+    curl -i -X POST -H 'Content-Type: application/json' -d '{"url": "https://www.example.com"}' http://localhost:3000/shorten
+
+### Response
+
+    HTTP/1.1 201 Created
+    {
+      "status": "success",
+      "timestamp": 1720620704542,
+      "data": {
+        "url": "https://example.com",
+        "code": "fmr7j",
+      }
+    }
+
+## Using the shortened URL
+
+### Request
+
+`GET /:shortenedUrl`
+
+    curl -i http://localhost:3000/fmr7j
+
+### Response
+
+    HTTP/1.1 302 Found
+    Location: https://example.com
+
+## Getting all shortened URLs
+
+-   Requires `Authorization` header with a valid JWT token.
+-   Requires the user to have the `admin` role.
+
+### Request
+
+`GET /api/url`
+
+    curl -i -H 'Authoriztion: Bearer <token>' http://localhost:3000/api/url
+
+### Response
+
+    HTTP/1.1 200 OK
+    {
+      "status": "success",
+      "timestamp": 1720620704542,
+      "data": [
+        {
+          "url": "https://example.com",
+          "code": "fmr7j",
+          "deleted": false,
+          "visits": 0,
+          "createdAt": "2024-07-10T12:25:40.535Z"
+        }
+      ]
+    }
+
+## Getting a shortened URL by code
+
+-   Requires `Authorization` header with a valid JWT token.
+-   Requires the user to have the `admin` role.
+
+Using `GET /:shortenedUrl` will redirect to the original URL however, if you want to get the details of the shortened URL, you can use the following route:
+
+### Request
+
+`GET /api/url/:code`
+
+    curl -i -H 'Authorizaion: Bearer <token>' http://localhost:3000/api/url/fmr7j
+
+### Response
+
+    HTTP/1.1 200 OK
+    {
+      "status": "success",
+      "timestamp": 1720620704542,
+      "data": {
+        "url": "https://example.com",
+        "code": "fmr7j",
+        "deleted": false,
+        "visits": 0,
+        "createdAt": "2024-07-10T12:25:40.535Z"
+      }
+    }
+
+## Soft Deleting a shortened URL
+
+-   Requires `Authorization` header with a valid JWT token.
+-   Requires the user to have the `admin` role.
+
+This route will soft delete a shortened URL. The shortened URL will still be in the database but it will be marked as deleted.
+
+### Request
+
+`DELETE /api/url/:code`
+
+    curl -i -X DELETE -H 'Authorizaion: Bearer <token>' http://localhost:3000/api/url/fmr7j
+
+### Response
+
+    HTTP/1.1 200 OK
+    {
+    "status": "success",
+    "timestamp": 1720620825992
+    }
+
+## Hard Deleting a shortened URL
+
+-   Requires `Authorization` header with a valid JWT token.
+-   Requires the user to have the `admin` role.
+
+This route will hard delete a shortened URL. The shortened URL will be removed from the database.
+
+### Request
+
+`DELETE /api/url/:code/hard`
+
+    curl -i -X DELETE -H 'Authorizaion: Bearer <token>' http://localhost:3000/api/url/fmr7j/hard
+
+### Response
+
+    HTTP/1.1 200 OK
+    {
+    "status": "success",
+    "timestamp": 1720620825992
+    }
+
+## Restoring a shortened URL
+
+-   Requires `Authorization` header with a valid JWT token.
+-   Requires the user to have the `admin` role.
+
+This route will restore a soft deleted shortened URL.
+
+### Request
+
+`PATCH /api/url/:code/restore`
+
+    curl -i -X PATCH -H 'Authorization: Bearer <token>' http://localhost:3000/api/url/fmr7j/restore
+
+### Response
+
+    HTTP/1.1 200 OK
+    {
+    "status": "success",
+    "timestamp": 1720620825992
+    }
+
+## Login
+
+This route will log in a user and return a JWT token.
+
+### Request
+
+`POST /api/auth/login`
+
+    curl -i -X POST -H 'Content-Type: application/json' -d '{"username": "example", "password": "password"}' http://localhost:3000/api/auth/login
+
+### Response
+
+    HTTP/1.1 200 OK
+    {
+      "status": "success",
+      "timestamp": 1720620825992,
+      "data": {
+        "token": "<token>"
+      }
+    }
+
+## Registration
+
+This route will register a user.
+
+### Request
+
+`POST /api/auth/register`
+
+    curl -i -X POST -H 'Content-Type: application/json' -d '{"username": "example", "password": "password"}' http://localhost:3000/api/auth/register
+
+### Response
+
+    HTTP/1.1 201 Created
+    {
+      "status": "success",
+      "timestamp": 1720620825992,
+      "data": {
+        "username": "example"
+      }
+    }
+
+## Creating a user with a role
+
+-   Requires `Authorization` header with a valid JWT token.
+-   Requires the user to have the `admin` role.
+
+This route will create a user with a role.
+
+### Request
+
+`POST /api/auth/`
+
+    curl -i -X POST -H 'Authorization: Bearer <token>' -d '{"username": "example", "password": "password", "role": "admin"}' http://localhost:3000/api/auth/
+
+### Response
+
+    HTTP/1.1 201 Created
+    {
+      "status": "success",
+      "timestamp": 1720620825992,
+      "data": {
+        "username": "example",
+        "role": "admin"
+      }
+    }
