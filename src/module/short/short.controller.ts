@@ -35,7 +35,7 @@ export class ShortController {
         }
     }
 
-    @Post('/generate')
+    @Post('/shorten')
     async generateShortUrl(
         @Body() createUrlDto: CreateUrlDto,
         @Req() req: Request,
