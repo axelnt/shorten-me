@@ -70,7 +70,7 @@ export class UserController {
                 createUserDto,
                 false,
             );
-            delete user.data.password;
+            delete user.password;
 
             return this.responseBuilder.successWithoutMessage(user).build();
         } catch (error) {
